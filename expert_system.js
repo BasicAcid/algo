@@ -60,11 +60,14 @@ if (nbCote > 1){
 }
 
 if(nbCote==5){
-
-    exit();
+    document.write('Pentagone');
 }
-if(nbCote==6){}
-if(nbCote==8){}
-if(nbCote==10){}
-if(nbCote==12){}
-if(nbCote==20){}
+if(nbCote==6){
+    document.write('Hexagone');
+}
+if(nbCote==8){
+    document.write('Heptagone');
+}
+if(nbCote==8){
+    document.write('Hoctogone');
+}
