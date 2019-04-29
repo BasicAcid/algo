@@ -1,4 +1,35 @@
-// Try edit msg
+<html>
+ <head>
+  <title>Test PHP</title>
+ </head>
+ <body>
+<?php
+
+function connectSQL(){
+    $link = mysql_connect('localhost', 'root', '')
+    or die('Impossible de se connecter : ' . mysql_error());
+    echo 'Connected successfully';
+    mysql_select_db('Formes') or die('Impossible de sélectionner la base de données');
+}
+
+
+function getFormes(){
+    // Exécution des requêtes SQL
+    $query = 'SELECT * FROM Formes';
+    $result = mysql_query($query) or die('Échec de la requête : ' . mysql_error());
+
+    // Affichage des résultats en HTML
+    echo "<table>\n";
+    while ($line = mysql_fetch_array($result, MYSQL_ASSOC)) {
+        echo "\t<tr>\n";
+        foreach ($line as $col_value) {
+            echo "\t\t<td>$col_value</td>\n";
+        }
+    echo "\t</tr>\n";
+}
+echo "</table>\n";
+
+}
 $nbCote = 3;
 $nbAnglesDroits = 0;
 $nbCotesPara = 0 ;
@@ -30,7 +61,7 @@ if ($nbCote > 1){
     if ($nbCote == 4){
         // Quadrilateral
         echo 'Quadrilatère';
-        if ($nbCotesPara >= 2){	    
+        if ($nbCotesPara >= 2){
             // trapeze (A trapezoid is a quadrilateral with exactly one pair of parallel sides)
             echo 'Trapèze';
             if ($nbCotesPara == 4){
@@ -44,20 +75,22 @@ if ($nbCote > 1){
                         echo 'Carré';
                     }
                 }
-                if ($nbCoteMemeLg == 4){		    
+                if ($nbCoteMemeLg == 4){
                     // losange
                     echo 'Losange';
-                }	    
+                }
             }
-        }	
+        }
         if ($nbCoteMemeLg == 2){
             if ($nbAnglesDroits == 0){
                 // Kite (kite A kite is a quadrilateral with two distinct pairs of adjacent sides that are congruent.)
                 echo 'Kite';
             }
         }
-    }       
+    }
 }
+
+
 
 if($nbCote==5){
     echo 'Pentagone';
@@ -71,3 +104,7 @@ if($nbCote==8){
 if($nbCote==8){
     echo 'Hoctogone';
 }
+
+?>
+ </body>
+</html>
