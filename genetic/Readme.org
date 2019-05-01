@@ -18,7 +18,7 @@ For the example we will consider the computation time on an imaginary 4GHz CPU:
 Such time is not very practical.
 
 By employing Genetic Algorithms, we can generate several population of
-solutions, and make them adapt to our problem.
+solutions, and make them adapt through generations.
 
 ** Data
 Each city is caracterised by its name and its coordinates, as given
@@ -42,9 +42,6 @@ below in JSON format:
 #+END_SRC
 
 ** Algorithm
-1. Generation of a population of 200 solutions.
-2.
-
 
  |    | Population |     |
  |----+------------+-----|
@@ -53,3 +50,20 @@ below in JSON format:
  | 12 |         50 | 30% |
  |  6 |         50 | 15% |
  |  2 |         50 |  5% |
+
+# From here https://iccl.inf.tu-dresden.de/w/images/b/b7/GA_for_TSP.pdf
+1. Convert coordinates value to binary.
+2. Generate a population of 200 solutions.
+3. Evaluate fitness for each solutions.
+4. Select parents from population.
+5. Choose at random a pair of parents for mating.  Exchange bit strings
+with the one-point crossover to create two offspring.
+6. Process each offspring by the mutation operator, and insert the
+resulting offspring in the new population.
+7. Repeat steps 5 and 6 until all parents are selected and mated (P
+offspring are created).
+8. Replace the old population of chromosomes by the new one.
+9. Evaluate the fitness of each chromosome in the new population.
+10. Go back to step 4 if the number of generations is less than some upper
+bound.  Otherwise, the final result is the best chromosome created
+during the sea.
