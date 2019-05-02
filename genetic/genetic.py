@@ -1,6 +1,9 @@
 #! /usr/bin/env python3
 
 import random, json, struct, geopy.distance, math
+from operator import itemgetter
+import numpy
+from numpy import array_split
 
 # Currently not used
 INDIVIDUALS_BY_GENERATION = 200
@@ -66,8 +69,13 @@ def population_fitness(population):
         population_with_fitness.append(individual_fitness(get_chromosome(members)))
     return population_with_fitness
 
-population_fitness(rand_population)
+population = population_fitness(rand_population)
 
-def classify_population():
-    """Classify a population by scores (best on top)"""
-    pass
+# Sort population by fitness, best on top
+sorted_list = sorted(population, key=itemgetter(16))
+
+def cut_by_four(a_list):
+    """Return list cutted in four"""
+    return numpy.array_split(a_list, 4)
+
+cutted_list = cut_by_four(sorted_list) # Here we got a list of lists of lists
