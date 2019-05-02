@@ -17,10 +17,10 @@ For the example we will consider the computation time on an imaginary 4GHz CPU:
 
 Such time is not very practical.
 
-By employing Genetic Algorithms, we can generate several population of
+By employing a Genetic Algorithms, we can generate several population of
 solutions, and make them adapt through generations.
 
-** Data
+** Input Data
 Each city is caracterised by its name and its coordinates, as given
 below in JSON format:
 #+BEGIN_SRC js
