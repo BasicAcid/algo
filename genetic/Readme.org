@@ -43,13 +43,13 @@ below in JSON format:
 
 ** Algorithm
 
- |    | Population |     |
- |----+------------+-----|
- |    |        200 |     |
- | 20 |         50 | 50% |
- | 12 |         50 | 30% |
- |  6 |         50 | 15% |
- |  2 |         50 |  5% |
+ | Selection | Population | Selection(~%) |
+ |-----------+------------+---------------|
+ |           |        200 |               |
+ |        20 |         50 |           50% |
+ |        12 |         50 |           30% |
+ |         6 |         50 |           15% |
+ |         2 |         50 |            5% |
 
 # From here https://iccl.inf.tu-dresden.de/w/images/b/b7/GA_for_TSP.pdf
 1. Convert coordinates value to binary.
