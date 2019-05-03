@@ -16,12 +16,6 @@ MUTATION_RATE = 0,5
 
 data = json.load(open('cities.json', 'r'))
 
-def float_to_bin(num):
-    return format(struct.unpack('!I', struct.pack('!f', num))[0], '032b')
-
-def bin_to_float(binary):
-    return struct.unpack('!f',struct.pack('!I', int(binary, 2)))[0]
-
 def rand_population():
     """
     Generate a list of solutions
@@ -112,7 +106,7 @@ def select_individuals(population):
 
 selection = select_individuals(cutted_list)
 
-# Tu use or not to use ?
+# Tu use or not to use ? Enough entropy ?
 random.shuffle(selection)
 
 def crossover(selection):
