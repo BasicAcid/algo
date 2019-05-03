@@ -1,11 +1,12 @@
 #! /usr/bin/env python3
+# -*- coding: utf-8 -*-
 
 import random, json, struct, geopy.distance, math
 from operator import itemgetter
 import numpy
 from numpy import array_split
+from pmx import pmx
 
-# Currently not used
 # N_GENERATION =
 N_POPULATION = 200
 # Crossover rate in percents
@@ -101,15 +102,23 @@ def random_pick(percents, a_list):
     random.shuffle(a_list)
     return a_list[:nb_elements]
 
-def darwin_curse(population):
-    """Remove unwanted individuals"""
-    very_good_fit = random_pick(0.5, population[0])
-    good_fit = random_pick(0.3, population[1])
-    bad_fit = random_pick(0.15, population[2])
-    very_bad_fit = random_pick(0.05, population[3])
-    return len(very_good_fit), len(good_fit), len(bad_fit), len(very_bad_fit)
+def select_individuals(population):
+    """Randomly select individuals"""
+    very_good_fit = random_pick(0.5, population[0]).tolist()
+    good_fit = random_pick(0.3, population[1]).tolist()
+    bad_fit = random_pick(0.15, population[2]).tolist()
+    very_bad_fit = random_pick(0.05, population[3]).tolist()
+    return very_good_fit + good_fit + bad_fit + very_bad_fit
 
-darwin_curse(cutted_list)
+selection = select_individuals(cutted_list)
 
-def new_generation(parents):
-    pass
+# Tu use or not to use ?
+random.shuffle(selection)
+
+def crossover(selection):
+    new_population = []
+    for individual in range( len( selection ) -1):
+        new_population.append( pmx( selection[individual], selection[individual+1] ) )
+    return new_population
+
+crossover(selection)
