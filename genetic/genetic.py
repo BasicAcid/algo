@@ -6,11 +6,10 @@ import numpy
 from numpy import array_split
 
 # Currently not used
-INDIVIDUALS_BY_GENERATION = 200
-
+# N_GENERATION =
+N_POPULATION = 200
 # Crossover rate in percents
 CROSSOVER_RATE = 80
-
 # Mutation rate rate in percents
 MUTATION_RATE = 0,5
 
@@ -28,7 +27,7 @@ def rand_population():
     Return format: rand_population[row][column]
     """
     initial_population = []
-    for line in range(200):
+    for line in range(N_POPULATION):
         rand = random.sample(range(15), 15)
         initial_population.append(rand)
     return initial_population
@@ -71,11 +70,46 @@ def population_fitness(population):
 
 population = population_fitness(rand_population)
 
-# Sort population by fitness, best on top
+# Sort population by fitness, best on top, twss
 sorted_list = sorted(population, key=itemgetter(16))
+
+def clean_list(a_list_of_lists):
+    """
+    Remove the last two elements of the individual
+    (as return point and the total distance are not used for crossover)
+    Ex: [10, 1, 11, 4, 5, 13, 12, 0, 9, 3, 8, 7, 6, 14, 2, 10, 6955.305315636573]
+    is transformed into:
+    [10, 1, 11, 4, 5, 13, 12, 0, 9, 3, 8, 7, 6, 14, 2]
+    """
+    for individuals in a_list_of_lists:
+        del individuals[-2:]
+    return a_list_of_lists
+
+clean_list(sorted_list)
 
 def cut_by_four(a_list):
     """Return list cutted in four"""
     return numpy.array_split(a_list, 4)
 
 cutted_list = cut_by_four(sorted_list) # Here we got a list of lists of lists
+
+def random_pick(percents, a_list):
+    """Randomly pick x percent of elements from a list/dict, and return the modified list"""
+    # Number of elements to pick
+    nb_elements = int( len(a_list) * percents)
+    # Randomize list
+    random.shuffle(a_list)
+    return a_list[:nb_elements]
+
+def darwin_curse(population):
+    """Remove unwanted individuals"""
+    very_good_fit = random_pick(0.5, population[0])
+    good_fit = random_pick(0.3, population[1])
+    bad_fit = random_pick(0.15, population[2])
+    very_bad_fit = random_pick(0.05, population[3])
+    return len(very_good_fit), len(good_fit), len(bad_fit), len(very_bad_fit)
+
+darwin_curse(cutted_list)
+
+def new_generation(parents):
+    pass
