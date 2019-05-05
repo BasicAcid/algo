@@ -7,7 +7,7 @@ import numpy
 from numpy import array_split
 from pmx import pmx
 
-N_GENERATION = 10
+N_GENERATION = 1
 N_POPULATION = 200
 CROSSOVER_RATE = 0.8
 # Mutation rate rate in percents
@@ -124,20 +124,9 @@ def generate(nb_of_generations):
     new_generation = new_population(selection)
     a = population_fitness(new_generation)
     b = sort_a_list(a)
-
-    print("NEW")
-    print(b)
-    print("OLD")
-    print(population_with_fitness)
-
-    return
+    c = clean_list(b)
+    d = cut_by_four(c)
+    e = select_individuals(d)
+    return e
 
 print(generate(N_GENERATION))
-
-# print(random_population_list)
-# print(population_fitness(random_population_list))
-
-#new_list = population_fitness(new_list)
-# print(population_with_fitness[100])
-# print(new_list[100])
-#new_list = sorted(new_list, key=itemgetter(16))
