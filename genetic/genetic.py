@@ -1,33 +1,30 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import random, json, struct, geopy.distance, math
+import random, json, struct, geopy.distance, math, copy
 from operator import itemgetter
 import numpy
 from numpy import array_split
 from pmx import pmx
 
-# N_GENERATION =
+N_GENERATION = 10
 N_POPULATION = 200
-# Crossover rate in percents
-CROSSOVER_RATE = 80
+CROSSOVER_RATE = 0.8
 # Mutation rate rate in percents
 MUTATION_RATE = 0,5
 
 data = json.load(open('cities.json', 'r'))
 
-def rand_population():
+def rand_population(nb_individuals):
     """
     Generate a list of solutions
     Return format: rand_population[row][column]
     """
     initial_population = []
-    for line in range(N_POPULATION):
+    for line in range(nb_individuals):
         rand = random.sample(range(15), 15)
         initial_population.append(rand)
-    return initial_population
-
-rand_population = rand_population()
+    return list(initial_population)
 
 def cities_distance(city1, city2):
     """
@@ -38,35 +35,33 @@ def cities_distance(city1, city2):
     coords_2 = ( float( data[city2]['lan'] ), float( data[city2]['lng'] ) )
     return geopy.distance.geodesic(coords_1, coords_2).km
 
-def get_chromosome(row):
+def get_chromosome(a_list, row):
     """Return only one individual from rand_population"""
     individual = []
-    for cities in range( len( rand_population[row] ) ):
-        individual.append(rand_population[row][cities])
+    for cities in range( len( a_list[row] ) ):
+        individual.append(a_list[row][cities])
     return individual
 
 def individual_fitness(individual):
     """Evaluate the fitness of one individual"""
     pass_value = []
-    # Add starting point at the end of the pass
-    individual.append(individual[0])
+    individual.append(individual[0]) # Add starting point at the end of the pass
     for i in range( len( individual ) -1):
         pass_value.append( cities_distance( individual[i], individual[i+1] ) )
-    # Add fitness to the end of the list
-    individual.append(sum(pass_value))
+    individual.append(sum(pass_value)) # Add fitness to the end of the list
     return individual
 
 def population_fitness(population):
     """Evaluate the fitness of a complete population"""
-    population_with_fitness = []
+    list_with_fitness = []
     for members in range(len(population)):
-        population_with_fitness.append(individual_fitness(get_chromosome(members)))
-    return population_with_fitness
+        list_with_fitness.append(individual_fitness(get_chromosome(population, members)))
+    return list_with_fitness
 
-population = population_fitness(rand_population)
-
-# Sort population by fitness, best on top, twss
-sorted_list = sorted(population, key=itemgetter(16))
+def sort_a_list(a_list):
+    """Sort population by fitness, best on top, twss"""
+    sorted_list = sorted(a_list, key=itemgetter(16))
+    return sorted_list
 
 def clean_list(a_list_of_lists):
     """
@@ -76,24 +71,19 @@ def clean_list(a_list_of_lists):
     is transformed into:
     [10, 1, 11, 4, 5, 13, 12, 0, 9, 3, 8, 7, 6, 14, 2]
     """
-    for individuals in a_list_of_lists:
+    new_cleaned_list = copy.deepcopy(a_list_of_lists) # Complete replicate to left the older list intact
+    for individuals in new_cleaned_list:
         del individuals[-2:]
-    return a_list_of_lists
-
-clean_list(sorted_list)
+    return new_cleaned_list
 
 def cut_by_four(a_list):
     """Return list cutted in four"""
     return numpy.array_split(a_list, 4)
 
-cutted_list = cut_by_four(sorted_list) # Here we got a list of lists of lists
-
 def random_pick(percents, a_list):
     """Randomly pick x percent of elements from a list/dict, and return the modified list"""
-    # Number of elements to pick
-    nb_elements = int( len(a_list) * percents)
-    # Randomize list
-    random.shuffle(a_list)
+    nb_elements = int( len(a_list) * percents) # Number of elements to pick
+    random.shuffle(a_list) # Randomize list
     return a_list[:nb_elements]
 
 def select_individuals(population):
@@ -104,15 +94,50 @@ def select_individuals(population):
     very_bad_fit = random_pick(0.05, population[3]).tolist()
     return very_good_fit + good_fit + bad_fit + very_bad_fit
 
-selection = select_individuals(cutted_list)
+def crossover(selected_population):
+    childs_list = []
+    for individual in range( len( selected_population ) -1):
+        childs_list.append( pmx( selected_population[individual], selected_population[individual+1] ) )
+    return childs_list
 
-# Tu use or not to use ? Enough entropy ?
-random.shuffle(selection)
+def new_population(selected_individuals):
+    """Generate a list composed of random individuals and of the childs from crossover"""
+    childs = crossover(selected_individuals)
+    childs = list(map(lambda x: x[0], childs)) # Childs is a list of tuples, here we convert it in a list of lists
+    nb_to_generate =  N_POPULATION - len(selected_individuals + childs)
+    nb_to_generate = int(nb_to_generate)
+    random_individuals = rand_population(nb_to_generate)
+    new_pop = selected_individuals + childs + random_individuals
+    return new_pop
 
-def crossover(selection):
-    new_population = []
-    for individual in range( len( selection ) -1):
-        new_population.append( pmx( selection[individual], selection[individual+1] ) )
-    return new_population
+def generate(nb_of_generations):
+    random_population_list = rand_population(N_POPULATION)
+    population_with_fitness = population_fitness(random_population_list)
+    sorted_list = sort_a_list(population_with_fitness)
 
-crossover(selection)
+    cleaned_list = clean_list(sorted_list)
+    cutted_list = cut_by_four(cleaned_list) # Here we got a list of lists of lists
+
+    selection = select_individuals(cutted_list)
+    random.shuffle(selection) # Tu use or not to use ? Enough entropy ?
+
+    new_generation = new_population(selection)
+    a = population_fitness(new_generation)
+    b = sort_a_list(a)
+
+    print("NEW")
+    print(b)
+    print("OLD")
+    print(population_with_fitness)
+
+    return
+
+print(generate(N_GENERATION))
+
+# print(random_population_list)
+# print(population_fitness(random_population_list))
+
+#new_list = population_fitness(new_list)
+# print(population_with_fitness[100])
+# print(new_list[100])
+#new_list = sorted(new_list, key=itemgetter(16))
