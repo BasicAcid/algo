@@ -67,3 +67,7 @@ offspring are created).
 10. Go back to step 4 if the number of generations is less than some upper
 bound.  Otherwise, the final result is the best chromosome created
 during the sea.
+
+* Results
+- 500 generations:
+  [14, 12, 7, 6, 5, 8, 9, 1, 0, 11, 2, 10, 13, 3, 4, 14, 3621.31214301027]

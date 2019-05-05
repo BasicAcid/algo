@@ -9,9 +9,8 @@ from pmx import pmx
 
 N_GENERATION = 1
 N_POPULATION = 200
-CROSSOVER_RATE = 0.8
-# Mutation rate rate in percents
-MUTATION_RATE = 0,5
+#CROSSOVER_RATE = 0.8
+#MUTATION_RATE = 0,5
 
 data = json.load(open('cities.json', 'r'))
 
@@ -110,9 +109,9 @@ def new_population(selected_individuals):
     new_pop = selected_individuals + childs + random_individuals
     return new_pop
 
-def generate(nb_of_generations):
-    random_population_list = rand_population(N_POPULATION)
-    population_with_fitness = population_fitness(random_population_list)
+def generate(input_population):
+    """Generate a new population from the one inputed"""
+    population_with_fitness = population_fitness(input_population)
     sorted_list = sort_a_list(population_with_fitness)
 
     cleaned_list = clean_list(sorted_list)
@@ -122,11 +121,18 @@ def generate(nb_of_generations):
     random.shuffle(selection) # Tu use or not to use ? Enough entropy ?
 
     new_generation = new_population(selection)
-    a = population_fitness(new_generation)
-    b = sort_a_list(a)
-    c = clean_list(b)
-    d = cut_by_four(c)
-    e = select_individuals(d)
-    return e
+    return new_generation
 
-print(generate(N_GENERATION))
+def evolve(input_population, n):
+    """Evolve n times a given population"""
+    print(n)
+    n = n-1
+    pop = generate(input_population)
+    if n > 0:
+        pop = evolve(pop, n)
+    return pop
+
+# Init a population
+random_population_list = rand_population(N_POPULATION)
+
+print(sort_a_list(population_fitness(evolve(random_population_list, 500))))
