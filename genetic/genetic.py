@@ -1,14 +1,19 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import random, json, struct, geopy.distance, math, copy
+import random, json, struct, geopy.distance, math, copy, argparse
 from operator import itemgetter
 import numpy
 from numpy import array_split
 from pmx import pmx
 
-N_GENERATION = 1
-N_POPULATION = 200
+parser = argparse.ArgumentParser(description='TSP GA')
+parser.add_argument('-i', help='number of individuals for one generation', action='store', dest='n_individuals', default=200, type=int)
+parser.add_argument('-g', help='number of generations', action='store', dest='n_generations', default=0, type=int)
+args = parser.parse_args()
+
+N_GENERATION = args.n_generations
+N_POPULATION = args.n_individuals
 #CROSSOVER_RATE = 0.8
 #MUTATION_RATE = 0,5
 
@@ -135,4 +140,11 @@ def evolve(input_population, n):
 # Init a population
 random_population_list = rand_population(N_POPULATION)
 
-print(sort_a_list(population_fitness(evolve(random_population_list, 500))))
+print(sort_a_list(population_fitness(evolve(random_population_list, N_GENERATION)))[0])
+
+def assign_cities(a_list):
+    """Assign cities to a list of integers"""
+    route = []
+    for cities in a_list:
+        route.append(data[cities]['city'])
+    return route
