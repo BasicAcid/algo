@@ -1,4 +1,4 @@
-* Genetic approach of the Travelling salesman problem
+* Genetic approach to the Travelling salesman problem
 Given a list of cities and the distances between each pair of cities,
 what is the shortest possible route that visits each city and returns
 to the origin city ?
@@ -56,28 +56,23 @@ below in JSON format:
 2. Generate a population of 200 solutions.
 3. Evaluate fitness for each solutions.
 4. Select parents from population.
-5. Choose at random a pair of parents for mating.  Exchange bit strings
-with the one-point crossover to create two offspring.
-6. Process each offspring by the mutation operator, and insert the
-resulting offspring in the new population.
-7. Repeat steps 5 and 6 until all parents are selected and mated (P
-offspring are created).
+5. Choose at random a pair of parents for mating.  Exchange bit strings with the one-point crossover to create two offspring.
+6. Process each offspring by the mutation operator, and insert the resulting offspring in the new population.
+7. Repeat steps 5 and 6 until all parents are selected and mated (P offspring are created).
 8. Replace the old population of chromosomes by the new one.
 9. Evaluate the fitness of each chromosome in the new population.
-10. Go back to step 4 if the number of generations is less than some upper
-bound.  Otherwise, the final result is the best chromosome created
-during the sea.
-
+10. Go back to step 4 if the number of generations is less than some upper bound.  Otherwise, the final result is the best chromosome created during the sea.
 
 * PMX Crossover
 1. Randomly select a swath of alleles from parent 1 and copy them directly to the child. Note the indexes of the segment.
 
 2. Looking in the same segment positions in parent 2, select each value that hasn't already been copied to the child.
-   For each of these values:
-   Note the index of this value in Parent 2. Locate the value, V, from parent 1 in this same position.
-   Locate this same value in parent 2.
-   If the index of this value in Parent 2 is part of the original swath, go to step i. using this value.
-   If the position isn't part of the original swath, insert Step A's value into the child in this position.
+
+     For each of these values:
+       - Note the index of this value in Parent 2. Locate the value, V, from parent 1 in this same position.
+       - Locate this same value in parent 2.
+       - If the index of this value in Parent 2 is part of the original swath, go to step i. using this value.
+       - If the position isn't part of the original swath, insert Step A's value into the child in this position.
 
 3. Copy any remaining positions from parent 2 to the child.
 
