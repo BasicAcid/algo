@@ -16,9 +16,9 @@ sys.setrecursionlimit(1500)
 parser = argparse.ArgumentParser(description='TSP GA')
 parser.add_argument('-i', help='number of individuals in one generation',
                     action='store', dest='n_individuals', default=200,
-                    type=int)
+                    type=int, required=True)
 parser.add_argument('-g', help='number of generations', action='store',
-                    dest='n_generations', default=0, type=int)
+                    dest='n_generations', default=0, type=int, required=True)
 args = parser.parse_args()
 
 N_GENERATION = args.n_generations
