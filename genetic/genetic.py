@@ -1,23 +1,33 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import random, json, struct, geopy.distance, math, copy, argparse
+import random
+import json
+import geopy.distance
+import copy
+import argparse
+import sys
 from operator import itemgetter
 import numpy
-from numpy import array_split
 from pmx import pmx
 
+sys.setrecursionlimit(1500)
+
 parser = argparse.ArgumentParser(description='TSP GA')
-parser.add_argument('-i', help='number of individuals for one generation', action='store', dest='n_individuals', default=200, type=int)
-parser.add_argument('-g', help='number of generations', action='store', dest='n_generations', default=0, type=int)
+parser.add_argument('-i', help='number of individuals in one generation',
+                    action='store', dest='n_individuals', default=200,
+                    type=int)
+parser.add_argument('-g', help='number of generations', action='store',
+                    dest='n_generations', default=0, type=int)
 args = parser.parse_args()
 
 N_GENERATION = args.n_generations
 N_POPULATION = args.n_individuals
-#CROSSOVER_RATE = 0.8
-#MUTATION_RATE = 0,5
+# CROSSOVER_RATE = 0.8
+# MUTATION_RATE = 0,5
 
 data = json.load(open('cities.json', 'r'))
+
 
 def rand_population(nb_individuals):
     """
@@ -30,65 +40,79 @@ def rand_population(nb_individuals):
         initial_population.append(rand)
     return list(initial_population)
 
+
 def cities_distance(city1, city2):
     """
     Get distance between two cities, take the row number as arguments
     Usage: cities_distance(0,4)
     """
-    coords_1 = ( float( data[city1]['lan'] ), float( data[city1]['lng'] ) )
-    coords_2 = ( float( data[city2]['lan'] ), float( data[city2]['lng'] ) )
+    coords_1 = (float(data[city1]['lan']), float(data[city1]['lng']))
+    coords_2 = (float(data[city2]['lan']), float(data[city2]['lng']))
     return geopy.distance.geodesic(coords_1, coords_2).km
+
 
 def get_chromosome(a_list, row):
     """Return only one individual from rand_population"""
     individual = []
-    for cities in range( len( a_list[row] ) ):
+    for cities in range(len(a_list[row])):
         individual.append(a_list[row][cities])
     return individual
+
 
 def individual_fitness(individual):
     """Evaluate the fitness of one individual"""
     pass_value = []
-    individual.append(individual[0]) # Add starting point at the end of the pass
-    for i in range( len( individual ) -1):
-        pass_value.append( cities_distance( individual[i], individual[i+1] ) )
-    individual.append(sum(pass_value)) # Add fitness to the end of the list
+    individual.append(individual[0])  # Add starting point at the end of pass
+    for i in range(len(individual)-1):
+        pass_value.append(cities_distance(individual[i], individual[i+1]))
+    individual.append(sum(pass_value))  # Add fitness to the end of the list
     return individual
+
 
 def population_fitness(population):
     """Evaluate the fitness of a complete population"""
     list_with_fitness = []
     for members in range(len(population)):
-        list_with_fitness.append(individual_fitness(get_chromosome(population, members)))
+        list_with_fitness.append(
+            individual_fitness(get_chromosome(population, members)))
     return list_with_fitness
+
 
 def sort_a_list(a_list):
     """Sort population by fitness, best on top, twss"""
     sorted_list = sorted(a_list, key=itemgetter(16))
     return sorted_list
 
+
 def clean_list(a_list_of_lists):
     """
     Remove the last two elements of the individual
     (as return point and the total distance are not used for crossover)
-    Ex: [10, 1, 11, 4, 5, 13, 12, 0, 9, 3, 8, 7, 6, 14, 2, 10, 6955.305315636573]
+    Ex: [10, 1, 11, 4, 5, 13, 12, 0, 9, 3, 8, 7, 6, 14, 2, 10, 6955.30]
     is transformed into:
     [10, 1, 11, 4, 5, 13, 12, 0, 9, 3, 8, 7, 6, 14, 2]
     """
-    new_cleaned_list = copy.deepcopy(a_list_of_lists) # Complete replicate to left the older list intact
+    # Complete replicate to left the older list intact
+    new_cleaned_list = copy.deepcopy(a_list_of_lists)
     for individuals in new_cleaned_list:
         del individuals[-2:]
     return new_cleaned_list
+
 
 def cut_by_four(a_list):
     """Return list cutted in four"""
     return numpy.array_split(a_list, 4)
 
+
 def random_pick(percents, a_list):
-    """Randomly pick x percent of elements from a list/dict, and return the modified list"""
-    nb_elements = int( len(a_list) * percents) # Number of elements to pick
-    random.shuffle(a_list) # Randomize list
+    """
+    Randomly pick x percent of elements from a list/dict,
+    and return the modified list
+    """
+    nb_elements = int(len(a_list)*percents)  # Number of elements to pick
+    random.shuffle(a_list)  # Randomize list
     return a_list[:nb_elements]
+
 
 def select_individuals(population):
     """Randomly select individuals"""
@@ -98,21 +122,29 @@ def select_individuals(population):
     very_bad_fit = random_pick(0.05, population[3]).tolist()
     return very_good_fit + good_fit + bad_fit + very_bad_fit
 
+
 def crossover(selected_population):
     childs_list = []
-    for individual in range( len( selected_population ) -1):
-        childs_list.append( pmx( selected_population[individual], selected_population[individual+1] ) )
+    for individual in range(len(selected_population)-1):
+        childs_list.append(pmx(selected_population[individual],
+                               selected_population[individual+1]))
     return childs_list
 
+
 def new_population(selected_individuals):
-    """Generate a list composed of random individuals and of the childs from crossover"""
+    """
+    Generate a list composed of random individuals
+    and of the childs from crossover
+    """
     childs = crossover(selected_individuals)
-    childs = list(map(lambda x: x[0], childs)) # Childs is a list of tuples, here we convert it in a list of lists
-    nb_to_generate =  N_POPULATION - len(selected_individuals + childs)
+    # Childs is a list of tuples, here we convert it in a list of lists
+    childs = list(map(lambda x: x[0], childs))
+    nb_to_generate = N_POPULATION - len(selected_individuals + childs)
     nb_to_generate = int(nb_to_generate)
     random_individuals = rand_population(nb_to_generate)
     new_pop = selected_individuals + childs + random_individuals
     return new_pop
+
 
 def generate(input_population):
     """Generate a new population from the one inputed"""
@@ -120,13 +152,14 @@ def generate(input_population):
     sorted_list = sort_a_list(population_with_fitness)
 
     cleaned_list = clean_list(sorted_list)
-    cutted_list = cut_by_four(cleaned_list) # Here we got a list of lists of lists
+    cutted_list = cut_by_four(cleaned_list)  # A list of lists of lists
 
     selection = select_individuals(cutted_list)
-    random.shuffle(selection) # Tu use or not to use ? Enough entropy ?
+    random.shuffle(selection)  # Tu use or not to use ? Enough entropy ?
 
     new_generation = new_population(selection)
     return new_generation
+
 
 def evolve(input_population, n):
     """Evolve n times a given population"""
@@ -137,10 +170,13 @@ def evolve(input_population, n):
         pop = evolve(pop, n)
     return pop
 
+
 # Init a population
 random_population_list = rand_population(N_POPULATION)
 
-print(sort_a_list(population_fitness(evolve(random_population_list, N_GENERATION)))[0])
+print(sort_a_list(population_fitness(evolve(random_population_list,
+                                            N_GENERATION)))[0])
+
 
 def assign_cities(a_list):
     """Assign cities to a list of integers"""
