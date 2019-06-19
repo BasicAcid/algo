@@ -103,11 +103,6 @@ def clean_list(a_list_of_lists):
     return new_cleaned_list
 
 
-def cut_by_four(a_list):
-    """Return list cutted in four"""
-    return numpy.array_split(a_list, 4)
-
-
 def random_pick(percents, a_list):
     """
     Randomly pick x percent of elements from a list/dict,
@@ -157,7 +152,7 @@ def generate(input_population):
     sorted_list = sort_a_list(population_with_fitness)
 
     cleaned_list = clean_list(sorted_list)
-    cutted_list = cut_by_four(cleaned_list)  # A list of lists of lists
+    cutted_list = numpy.array_split(cleaned_list, 4)
 
     selection = select_individuals(cutted_list)
     random.shuffle(selection)  # Tu use or not to use ? Enough entropy ?
