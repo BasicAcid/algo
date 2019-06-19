@@ -1,13 +1,17 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+"""
+Genetic approach to TSP
+"""
+
 import random
 import json
-import geopy.distance
 import copy
 import argparse
 import sys
 from operator import itemgetter
+import geopy.distance
 import numpy
 from pmx import pmx
 
@@ -35,7 +39,7 @@ def rand_population(nb_individuals):
     Return format: rand_population[row][column]
     """
     initial_population = []
-    for line in range(nb_individuals):
+    for _line in range(nb_individuals):
         rand = random.sample(range(15), 15)
         initial_population.append(rand)
     return list(initial_population)
@@ -124,6 +128,7 @@ def select_individuals(population):
 
 
 def crossover(selected_population):
+    """Partially Matched Crossover"""
     childs_list = []
     for individual in range(len(selected_population)-1):
         childs_list.append(pmx(selected_population[individual],
@@ -161,13 +166,13 @@ def generate(input_population):
     return new_generation
 
 
-def evolve(input_population, n):
+def evolve(input_population, _n):
     """Evolve n times a given population"""
-    print(n)
-    n = n-1
+    print(_n)
+    _n = _n - 1
     pop = generate(input_population)
-    if n > 0:
-        pop = evolve(pop, n)
+    if _n > 0:
+        pop = evolve(pop, _n)
     return pop
 
 
